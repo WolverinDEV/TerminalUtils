@@ -1,4 +1,4 @@
-package dev.wolveringer.string;
+package dev.wolveringer.terminal.string;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class ColoredString {
+public class ColoredString implements java.io.Serializable, Comparable<ColoredString>, CharSequence {
 	private ColoredChar[] characters = new ColoredChar[0];
 	private int index = 0;
 
@@ -25,12 +25,15 @@ public class ColoredString {
 			if(c[index] == '§'){
 				char colorcode = c[++index];
 				ChatColor color = ChatColor.getByChar(colorcode);
-				if(color == null)
+				if(color == null){
+					System.err.println("Cant find character code for "+colorcode);
 					color = ChatColor.RESET;
+				}
+				last = last.clone();
 				last.applayChatColor(color);
 				continue;
 			}
-			chars.add(last.copyStyle(c[index]));
+			chars.add(last = last.copyStyle(c[index]));
 		}
 		enschureSpace(chars.size());
 		for (ColoredChar ch : chars)
@@ -84,13 +87,15 @@ public class ColoredString {
 	
 	public String toString(boolean colored) {
 		StringBuilder out = new StringBuilder();
-		for(ColoredChar characters : this.characters){
+		ColoredChar last = null;
+		for(ColoredChar character : this.characters){
 			if(!colored)
-				out.append(characters.getCharacter());
+				out.append(character.getCharacter());
 			else
-				out.append(characters.toString());
+				out.append(character.toString(last));
+			last = character;
 		}
-		return out.toString()+(colored ? "§r" : "");
+		return out.toString()/*+(colored ? "§r" : "")*/;
 	}
 	@Override
 	public ColoredString clone(){
@@ -98,5 +103,29 @@ public class ColoredString {
 		out.characters = characters.clone();
 		out.index = index;
 		return out;
+	}
+
+	@Override
+	public int length() {
+		return characters.length;
+	}
+
+	@Override
+	public char charAt(int index) {
+		return characters[index].getCharacter();
+	}
+
+	@Override
+	public CharSequence subSequence(int start, int end) {
+		return null; //TODO
+	}
+
+	@Override
+	public int compareTo(ColoredString o) {
+		return 0;
+	}
+	
+	public ColoredChar[] getCharacters(){
+		return this.characters;
 	}
 }
