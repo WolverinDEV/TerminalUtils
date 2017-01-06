@@ -22,7 +22,7 @@ public class ColoredString implements java.io.Serializable, Comparable<ColoredSt
 		ColoredChar last = characters.length == 0 ? new ColoredChar('A') : characters[characters.length-1];
 		char[] c = message.toCharArray();
 		for(int index = 0; index < c.length;index++){
-			if(c[index] == '§'){
+			if(c[index] == ChatColor.COLOR_CHAR){
 				char colorcode = c[++index];
 				ChatColor color = ChatColor.getByChar(colorcode);
 				if(color == null){
@@ -95,7 +95,7 @@ public class ColoredString implements java.io.Serializable, Comparable<ColoredSt
 				out.append(character.toString(last));
 			last = character;
 		}
-		return out.toString()/*+(colored ? "§r" : "")*/;
+		return out.toString()/*+(colored ? ChatColor.COLOR_CHAR+"r" : "")*/;
 	}
 	@Override
 	public ColoredString clone(){
