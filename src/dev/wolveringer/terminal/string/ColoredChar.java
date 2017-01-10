@@ -1,4 +1,4 @@
-package dev.wolveringer.terminal;
+package dev.wolveringer.terminal.string;
 
 import lombok.Getter;
 import lombok.Setter;

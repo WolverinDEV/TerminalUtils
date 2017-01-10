@@ -12,8 +12,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 
-import dev.wolveringer.terminal.ColoredChar;
-import dev.wolveringer.terminal.ColoredString;
+import dev.wolveringer.terminal.string.ColoredChar;
+import dev.wolveringer.terminal.string.ColoredString;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

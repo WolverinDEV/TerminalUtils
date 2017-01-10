@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import dev.wolveringer.terminal.ColoredChar;
+import dev.wolveringer.terminal.string.ColoredChar;
 import dev.wolveringer.terminal.table.TerminalTable.Align;
 import dev.wolveringer.terminal.table.TerminalTable.TerminalRow;
 
