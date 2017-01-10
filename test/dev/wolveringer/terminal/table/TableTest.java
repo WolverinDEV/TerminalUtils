@@ -1,8 +1,10 @@
 package dev.wolveringer.terminal.table;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
-import dev.wolveringer.terminal.string.ColoredChar;
+import dev.wolveringer.terminal.ColoredChar;
 import dev.wolveringer.terminal.table.TerminalTable.Align;
 import dev.wolveringer.terminal.table.TerminalTable.TerminalRow;
 
@@ -24,8 +26,6 @@ public class TableTest {
 		row.setText(2, "2\n4");
 		row.setText(3, "4\n1");
 		table.addRow(row);
-		
-		
 		table.setRowSeperator(new TerminalTable.RowSeperator() {
 			@Override
 			public ColoredChar getSeperator(TerminalRow row, int rowIndex, int columnFrom, int columnTo) {
@@ -39,8 +39,6 @@ public class TableTest {
 				return new ColoredChar('|');
 			}
 		});
-		
-		
 		table.printTable();
 	}
 

@@ -1,4 +1,4 @@
-package dev.wolveringer.terminal.string;
+package dev.wolveringer.terminal;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class ColoredString implements java.io.Serializable, Comparable<ColoredString>, CharSequence {
+public class ColoredString {
 	private ColoredChar[] characters = new ColoredChar[0];
 	private int index = 0;
 
@@ -22,18 +22,15 @@ public class ColoredString implements java.io.Serializable, Comparable<ColoredSt
 		ColoredChar last = characters.length == 0 ? new ColoredChar('A') : characters[characters.length-1];
 		char[] c = message.toCharArray();
 		for(int index = 0; index < c.length;index++){
-			if(c[index] == ChatColor.COLOR_CHAR){
+			if(c[index] == '§'){
 				char colorcode = c[++index];
 				ChatColor color = ChatColor.getByChar(colorcode);
-				if(color == null){
-					System.err.println("Cant find character code for "+colorcode);
+				if(color == null)
 					color = ChatColor.RESET;
-				}
-				last = last.clone();
 				last.applayChatColor(color);
 				continue;
 			}
-			chars.add(last = last.copyStyle(c[index]));
+			chars.add(last.copyStyle(c[index]));
 		}
 		enschureSpace(chars.size());
 		for (ColoredChar ch : chars)
@@ -87,15 +84,13 @@ public class ColoredString implements java.io.Serializable, Comparable<ColoredSt
 	
 	public String toString(boolean colored) {
 		StringBuilder out = new StringBuilder();
-		ColoredChar last = null;
-		for(ColoredChar character : this.characters){
+		for(ColoredChar characters : this.characters){
 			if(!colored)
-				out.append(character.getCharacter());
+				out.append(characters.getCharacter());
 			else
-				out.append(character.toString(last));
-			last = character;
+				out.append(characters.toString());
 		}
-		return out.toString()/*+(colored ? ChatColor.COLOR_CHAR+"r" : "")*/;
+		return out.toString()+(colored ? "§r" : "");
 	}
 	@Override
 	public ColoredString clone(){
@@ -103,29 +98,5 @@ public class ColoredString implements java.io.Serializable, Comparable<ColoredSt
 		out.characters = characters.clone();
 		out.index = index;
 		return out;
-	}
-
-	@Override
-	public int length() {
-		return characters.length;
-	}
-
-	@Override
-	public char charAt(int index) {
-		return characters[index].getCharacter();
-	}
-
-	@Override
-	public CharSequence subSequence(int start, int end) {
-		return null; //TODO
-	}
-
-	@Override
-	public int compareTo(ColoredString o) {
-		return 0;
-	}
-	
-	public ColoredChar[] getCharacters(){
-		return this.characters;
 	}
 }

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dev.wolveringer</groupId>
 	<artifactId>TerminalUtils</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -17,6 +17,16 @@
 			</plugin>
 		</plugins>
 	</build>
+		<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+	</distributionManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -32,7 +42,7 @@
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-chat</artifactId>
-			<version>1.11-SNAPSHOT</version>
+			<version>1.10-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->

@@ -2,20 +2,18 @@ package dev.wolveringer.terminal.graph;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 
-import dev.wolveringer.terminal.string.ColoredChar;
-import dev.wolveringer.terminal.string.ColoredString;
+import dev.wolveringer.terminal.ColoredChar;
+import dev.wolveringer.terminal.ColoredString;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -96,7 +94,7 @@ public class TerminalGraph {
 			if(points.size() == 0)
 				return new Point(x, 0); //All zero
 			if(points.size() == 1)
-				return new Point(x, points.first().y); //Linear with m = 0
+				return new Point(x, points.first().y); //Linear
 			if(smoth){
 				double rangeMaxX = points.last().x;
 				double rangeMinX = points.first().x;
@@ -182,10 +180,10 @@ public class TerminalGraph {
 	
 	@Getter
 	@Setter
-	private ColoredString xAxisName = new ColoredString("X-Axis");
+	private ColoredString xAxisName = new ColoredString("X-Achse");
 	@Getter
 	@Setter
-	private ColoredString yAxisName = new ColoredString("Y-Axis");
+	private ColoredString yAxisName = new ColoredString("Y-Achse");
 	
 	public void addGraph(Graph g){
 		graths.add(g);
@@ -193,6 +191,8 @@ public class TerminalGraph {
 	
 	
 	public ColoredString[] buildLines(int sizeX,int sizeY,boolean smooth){
+		if(startX == 0 || startY>=endY)
+			throw new RuntimeException("Invalid parameters!");
 		ColoredString[] lines = new ColoredString[sizeY];
 		for (int i = 0; i < lines.length; i++) {
 			lines[i] = new ColoredString();
@@ -204,20 +204,6 @@ public class TerminalGraph {
 		return ArrayUtils.addAll(lines, xrow);
 	}
 	
-	private List<Entry<Graph, Double>> sort(double x, boolean smooth){
-		HashMap<Graph, Double> values = new HashMap<>();
-		for(Graph g : this.graths)
-			values.put(g, g.getPoint(x, smooth).y);
-		List<Entry<Graph, Double>> e = new ArrayList<>(values.entrySet());
-		Collections.sort(e, new Comparator<Entry<Graph, Double>>() {
-			@Override
-			public int compare(Entry<Graph, Double> o1, Entry<Graph, Double> o2) {
-				return Double.compare(o2.getValue(), o1.getValue());
-			}
-		});
-		return e;
-	}
-	
 	private void buildGraph(int startIndex, ColoredString[] lines,int rowFill,boolean smooth){
 		for(int i = 0;i<lines.length;i++)
 			while (lines[i].getSize() < startIndex+rowFill) {
@@ -227,13 +213,13 @@ public class TerminalGraph {
 		BigDecimal stepsPerColumn = new BigDecimal(endX-startX).divide(new BigDecimal(rowFill), 2, BigDecimal.ROUND_CEILING);
 		BigDecimal count = new BigDecimal(startX);
 		for(int i = 1;i<rowFill;i++){
-			for(Entry<Graph, Double> grath : sort(count.doubleValue(), smooth)){
-				double y = grath.getValue(); //TODO
-				if(grath.getKey().fillBelowUp){
+			for(Graph graph : graths){
+				double y = graph.getPoint(count.doubleValue(), smooth).y; //TODO
+				if(graph.fillBelowUp){
 					if(y >= startY){
 						for(int line = 0;line<lines.length;line++){
 							if(y > (new BigDecimal(startY).add(deltaPerLine.multiply(new BigDecimal(line)))).doubleValue()){
-								lines[lines.length-line-1].set(startIndex+i, grath.getKey().getCharacter());
+								lines[lines.length-line-1].set(startIndex+i, graph.getCharacter());
 							}
 							//else
 							//lines[lines.length-line-1] = replaceChar(lines[lines.length-line-1], startIndex+i, ' ');
@@ -245,7 +231,7 @@ public class TerminalGraph {
 					if(y >= startY && y <= endY){
 						for(int line = 0;line<lines.length;line++){
 							if(y > (new BigDecimal(startY).add(deltaPerLine.multiply(new BigDecimal(line)))).doubleValue() && (new BigDecimal(startY).add(deltaPerLine.multiply(new BigDecimal(line+1)))).doubleValue() > y){
-								lines[lines.length-line-1].set(startIndex+i, grath.getKey().getCharacter());
+								lines[lines.length-line-1].set(startIndex+i, graph.getCharacter());
 								break;
 							}
 						}
@@ -329,29 +315,20 @@ public class TerminalGraph {
 		grath.addPoint(new Point(15, 3));
 		grath.addPoint(new Point(20, 20));
 		grath.character = new ColoredChar('?');
-		//grath.character.setColor(ChatColor.GREEN);
+		grath.character.setColor(ChatColor.GREEN);
 		grath.fillBelowUp = true;
 		
 		Graph grath2 = new Graph();
-		grath2.addPoint(new Point(0, 0));
-		grath2.addPoint(new Point(1, .4));
-		
-		Graph grath3 = new Graph();
-		grath3.addPoint(new Point(0, 10));
-		grath3.addPoint(new Point(5, 0));
-		grath3.addPoint(new Point(10, 5));
-		grath3.character = new ColoredChar('*');
+		grath2.addPoint(new Point(10, 0));
+		grath2.addPoint(new Point(0, 10));
 		
 		TerminalGraph display = new TerminalGraph();
-		display.startX = 0;
-		display.endX = 20;
+		display.graths.add(grath);
+		display.startX = 20;
+		display.endX = 0;
 		display.startY = 0;
 		display.endY = 20;
-		
-		display.graths.add(grath);
-		display.graths.add(grath2);
-		display.graths.add(grath3);
-		
+		//display.graths.add(grath2);
 		for(ColoredString line : display.buildLines(200, 60, false))
 			System.out.println(ChatColor.stripColor(line.toString()));
 	}
